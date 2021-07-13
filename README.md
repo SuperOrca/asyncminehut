@@ -1,5 +1,5 @@
 # asyncminehut
- A async wrapper for the minehut api.
+ An asynchronous wrapper for the Minehut API. https://api.minehut.com/
  
 ## Installation
 ```
