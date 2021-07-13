@@ -7,7 +7,7 @@ from .constants import CLIENT_TIMEOUT
 from .errors import *
 from .http import HTTP
 from .meta import __version__
-from .objects import Server, PartialServer, Plugin
+from .objects import Server, PartialServer, Plugin, SimpleStats, HomepageStats, PlayerDistribution
 from .utils import get
 
 
@@ -42,6 +42,11 @@ class HTTPClient:
         for server in data['servers']:
             yield PartialServer(server)
 
+    async def getTop5Servers(self):
+        data = await self._http.get('/network/top_servers')
+        for server in data['servers']:
+            yield PartialServer(server)
+
     async def getPluginByID(self, plugin_id: str) -> Plugin:
         if not hasattr(self, '__plugins'):
             self.__plugins = await self._http.get('/plugins_public')
@@ -65,6 +70,18 @@ class HTTPClient:
             self.__plugins = await self._http.get('/plugins_public')
         for plugin in self.__plugins['all']:
             yield Plugin(plugin)
+
+    async def getSimpleStats(self):
+        data = await self._http.get('/network/simple_stats')
+        return SimpleStats(data)
+
+    async def getHomepageStats(self):
+        data = await self._http.get('/network/homepage_stats')
+        return HomepageStats(data)
+
+    async def getHomepageStats(self):
+        data = await self._http.get('/network/players/distribution')
+        return PlayerDistribution(data)
 
     async def close(self):
         await self._session.close()

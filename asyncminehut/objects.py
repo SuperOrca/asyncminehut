@@ -89,6 +89,7 @@ class Server:
 class ServerPlan:
     def __init__(self, *args) -> None:
         self.data: tuple = tuple(args)
+
         self.name = self.data[0]
         self.max_players = self.data[1]
 
@@ -102,6 +103,7 @@ class ServerPlan:
 class Pod:
     def __init__(self, data: dict) -> None:
         self.data: dict = data
+
         self.instance = data.get('instance')
         self.sidecar = data.get('instance-sidecar')
 
@@ -118,6 +120,7 @@ class Pod:
 class ServerProperties:
     def __init__(self, data: dict) -> None:
         self.data: dict = data
+
         for key, value in data.items():
             setattr(self, key, value)
 
@@ -130,7 +133,8 @@ class ServerProperties:
 
 class Plugin:
     def __init__(self, data: dict):
-        self.data: str = data
+        self.data: dict = data
+
         for key, value in data.items():
             if key != '_id':
                 setattr(self, key, value)
@@ -142,6 +146,54 @@ class Plugin:
 
     def __repr__(self) -> str:
         return '<Plugin id={0.id} name={0.name}>'.format(self)
+
+    def __dict__(self) -> dict:
+        return self.data
+
+
+class SimpleStats:
+    def __init__(self, data: dict):
+        self.data: dict = data
+
+        self.player_count = data.get('player_count')
+        self.server_count = data.get('server_count')
+        self.server_max = data.get('server_max')
+        self.ram_count = data.get('ram_count')
+        self.ram_max = data.get('ram_max')
+
+    def __repr__(self) -> str:
+        return '<SimpleStats>'
+
+    def __dict__(self) -> dict:
+        return self.data
+
+
+class HomepageStats:
+    def __init__(self, data: dict):
+        self.data: dict = data
+
+        self.server_count = data.get('server_count')
+        self.user_count = data.get('user_count')
+
+    def __repr__(self) -> str:
+        return '<HomepageStats>'
+
+    def __dict__(self) -> dict:
+        return self.data
+
+class PlayerDistribution:
+    def __init__(self, data: dict):
+        self.data: dict = data
+
+        self.bedrock_total = data.get('bedrockTotal')
+        self.java_total = data.get('javaTotal')
+        self.bedrock_lobby = data.get('bedrockLobby')
+        self.bedrock_player_server = data.get('bedrockPlayerServer')
+        self.java_lobby = data.get('javaLobby')
+        self.java_player_server = data.get('javaPlayerServer')
+
+    def __repr__(self) -> str:
+        return '<PlayerDistribution>'
 
     def __dict__(self) -> dict:
         return self.data
