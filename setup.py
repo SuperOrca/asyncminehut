@@ -1,7 +1,7 @@
 from setuptools import find_packages, setup
 import re
 
-with open('asyncdagpi/meta.py') as f:
+with open('asyncminehut/meta.py') as f:
     version = re.search(
         r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', f.read(), re.MULTILINE).group(1)
 
@@ -14,11 +14,6 @@ setup(
     long_description_content_type="text/markdown",
     include_package_data=True,
     url="https://github.com/SuperOrca/asyncminehut",
-    # project_urls={
-    #     "Documentation": "https://asyncdagpi.rtfd.io",
-    #     "Issue tracker": "https://github.com/Daggy1234/asyncdagpi/issues",
-    #     "Website": "https://dagpi.xyz"
-    # },
     author="SuperOrca",
     packages=find_packages(),
     install_requires=["aiohttp"],
