@@ -67,4 +67,4 @@ class HTTPClient:
             yield Plugin(plugin)
 
     async def close(self):
-        await self.session.close()
+        await self._session.close()
