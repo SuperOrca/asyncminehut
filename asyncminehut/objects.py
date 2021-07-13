@@ -2,7 +2,7 @@ from .client import Client
 
 
 class PartialServer:
-    def __init__(self, client: Client, data: dict):
+    def __init__(self, client: Client, data: dict) -> None:
         self._client: Client = client
         self.data: dict = data
 
@@ -43,7 +43,7 @@ class PartialServer:
 
 
 class Server:
-    def __init__(self, client: Client, data: dict):
+    def __init__(self, client: Client, data: dict) -> None:
         self._client: Client = client
         self.data: dict = data
 
@@ -91,7 +91,7 @@ class Server:
 
 
 class ServerPlan:
-    def __init__(self, *args):
+    def __init__(self, *args) -> None:
         self.data: tuple = tuple(args)
         self.name = self.data[0]
         self.max_players = self.data[1]
@@ -104,7 +104,7 @@ class ServerPlan:
 
 
 class Pod:
-    def __init__(self, data: dict):
+    def __init__(self, data: dict) -> None:
         self.data: dict = data
         self.instance = data.get('instance')
         self.sidecar = data.get('instance-sidecar')
@@ -120,7 +120,7 @@ class Pod:
 
 
 class ServerProperties:
-    def __init__(self, data: dict):
+    def __init__(self, data: dict) -> None:
         self.data: dict = data
         for key, value in data.items():
             setattr(self, key, value)

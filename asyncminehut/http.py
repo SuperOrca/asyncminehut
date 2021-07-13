@@ -4,7 +4,7 @@ from .constants import BASE_URL
 
 
 class HTTP:
-    def __init__(self, session):
+    def __init__(self, session) -> None:
         self.session = session
 
     async def get(self, url: str, **kwargs) -> dict:

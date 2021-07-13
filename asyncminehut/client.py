@@ -1,7 +1,7 @@
 import aiohttp
 import asyncio
 import sys
-from typing import Optional
+from typing import Optional, Generator
 
 from . import __version__
 from .constants import CLIENT_TIMEOUT
@@ -22,14 +22,14 @@ class HTTPClient:
         )
         self._http: HTTP = HTTP(self._session)
 
-    async def getServerByID(self, server_id: str):
+    async def getServerByID(self, server_id: str) -> Server:
         data = await self._http.get(f'/server/{server_id}')
         if not data.get('ok', True):
             raise ServerNotFound(
                 'Server with id "{}" was not found.'.format(server_id))
         return Server(self._http, data)
 
-    async def getServerByName(self, server_name: str):
+    async def getServerByName(self, server_name: str) -> Server:
         data = await self._http.get(f'/server/{server_name}?byName=true')
         if not data.get('ok', True):
             raise ServerNotFound(
@@ -41,7 +41,7 @@ class HTTPClient:
         for server in data['servers']:
             yield PartialServer(self._http, server)
 
-    async def getPluginByID(self, plugin_id: str):
+    async def getPluginByID(self, plugin_id: str) -> Plugin:
         if not hasattr(self, '__plugins'):
             self.__plugins = await self._http.get('/plugins_public')
         query = [plugin for plugin in self._plugins if plugin["_id"] == plugin_id]
@@ -50,7 +50,7 @@ class HTTPClient:
                 'Plugin with id "{}" was not found.'.format(plugin_id))
         return Plugin(self, query[0])
 
-    async def getPluginByName(self, plugin_name: str):
+    async def getPluginByName(self, plugin_name: str) -> Plugin:
         if not hasattr(self, '__plugins'):
             self.__plugins = await self._http.get('/plugins_public')
         query = [plugin for plugin in self._plugins if plugin["name"] == plugin_name]
