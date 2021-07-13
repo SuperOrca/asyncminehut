@@ -69,7 +69,7 @@ class Server:
 
     async def get_plugins(self):
         for plugin in self.data.get('active_plugins'):
-            yield self._client.getPluginByID(plugin)
+            yield await self._client.getPluginByID(plugin)
 
     async def get_players(self):
         """Going to change this later."""
