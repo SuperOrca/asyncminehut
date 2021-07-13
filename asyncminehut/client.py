@@ -48,7 +48,7 @@ class HTTPClient:
         if query == []:
             raise PluginNotFound(
                 'Plugin with id "{}" was not found.'.format(plugin_id))
-        return Plugin(self, query[0])
+        return Plugin(query[0])
 
     async def getPluginByName(self, plugin_name: str) -> Plugin:
         if not hasattr(self, '__plugins'):
@@ -57,13 +57,13 @@ class HTTPClient:
         if query == []:
             raise PluginNotFound(
                 'Plugin with name "{}" was not found.'.format(plugin_name))
-        return Plugin(self, query[0])
+        return Plugin(query[0])
 
     async def getAllPlugins(self):
         if not hasattr(self, '__plugins'):
             self.__plugins = await self._http.get('/plugins_public')
         for plugin in self.__plugins['all']:
-            yield Plugin(self, plugin)
+            yield Plugin(plugin)
 
     async def close(self):
         await self.session.close()
