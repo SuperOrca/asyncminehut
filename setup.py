@@ -9,7 +9,7 @@ setup(
     name="asyncminehut",
     version=version,
     license="MIT",
-    description="A async wrapper for the minehut api.",
+    description="An asynchronous wrapper for the Minehut API. https://api.minehut.com/",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     include_package_data=True,
