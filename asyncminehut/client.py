@@ -44,7 +44,7 @@ class HTTPClient:
     async def getPluginByID(self, plugin_id: str) -> Plugin:
         if not hasattr(self, '__plugins'):
             self.__plugins = await self._http.get('/plugins_public')
-        query = [plugin for plugin in self._plugins['all'] if plugin["_id"] == plugin_id]
+        query = [plugin for plugin in self.__plugins['all'] if plugin["_id"] == plugin_id]
         if query == []:
             raise PluginNotFound(
                 'Plugin with id "{}" was not found.'.format(plugin_id))
@@ -53,7 +53,7 @@ class HTTPClient:
     async def getPluginByName(self, plugin_name: str) -> Plugin:
         if not hasattr(self, '__plugins'):
             self.__plugins = await self._http.get('/plugins_public')
-        query = [plugin for plugin in self._plugins['all'] if plugin["name"] == plugin_name]
+        query = [plugin for plugin in self.__plugins['all'] if plugin["name"] == plugin_name]
         if query == []:
             raise PluginNotFound(
                 'Plugin with name "{}" was not found.'.format(plugin_name))
