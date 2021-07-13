@@ -19,7 +19,7 @@ class PartialServer:
         self.last_save = self.save.get('lastSave')  # datetime
 
         self.player_data = data.get('playerData', {})
-        self.player_count = self.player_data.get('player_count')
+        self.player_count = self.player_data.get('playerCount')
 
         self.pod = Pod(data.get('podInfo', {}))
 
