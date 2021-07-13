@@ -49,7 +49,7 @@ class HTTPClient:
         if not query:
             raise PluginNotFound(
                 'Plugin with id "{}" was not found.'.format(plugin_id))
-        return Plugin(query[0])
+        return Plugin(query)
 
     async def getPluginByName(self, plugin_name: str) -> Plugin:
         if not hasattr(self, '__plugins'):
@@ -58,7 +58,7 @@ class HTTPClient:
         if not query:
             raise PluginNotFound(
                 'Plugin with name "{}" was not found.'.format(plugin_name))
-        return Plugin(query[0])
+        return Plugin(query)
 
     async def getAllPlugins(self):
         if not hasattr(self, '__plugins'):
