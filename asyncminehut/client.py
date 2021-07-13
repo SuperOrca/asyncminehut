@@ -4,14 +4,15 @@ import sys
 from typing import Optional
 
 from . import __version__
-from .objects import Server, PartialServer, Plugin
 from .constants import CLIENT_TIMEOUT
-from .http import HTTP
 from .errors import *
+from .http import HTTP
+from .objects import Server, PartialServer, Plugin
 
 
 class HTTPClient:
-    def __init__(self, session: Optional[aiohttp.ClientSession] = None, loop: Optional[asyncio.AbstractEventLoop] = None) -> None:
+    def __init__(self, session: Optional[aiohttp.ClientSession] = None,
+                 loop: Optional[asyncio.AbstractEventLoop] = None) -> None:
         self._loop: asyncio.AbstractEventLoop = loop or asyncio.get_event_loop()
         self._session: aiohttp.ClientSession = session or aiohttp.ClientSession(
             timeout=CLIENT_TIMEOUT,
