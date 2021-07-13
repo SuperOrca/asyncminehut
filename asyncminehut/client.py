@@ -27,14 +27,14 @@ class HTTPClient:
         if not data.get('ok', True):
             raise ServerNotFound(
                 'Server with id "{}" was not found.'.format(server_id))
-        return Server(self._http, data['server'])
+        return Server(self, data['server'])
 
     async def getServerByName(self, server_name: str) -> Server:
         data = await self._http.get(f'/server/{server_name}?byName=true')
         if not data.get('ok', True):
             raise ServerNotFound(
                 'Server with name "{}" was not found.'.format(server_name))
-        return Server(self._http, data['server'])
+        return Server(self, data['server'])
 
     async def getAllServers(self):
         data = await self._http.get('/servers')
