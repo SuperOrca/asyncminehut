@@ -1,9 +1,8 @@
-from .client import Client
+from .client import HTTPClient
 
 
 class PartialServer:
-    def __init__(self, client: Client, data: dict) -> None:
-        self._client: Client = client
+    def __init__(self, data: dict) -> None:
         self.data: dict = data
 
         self.static = data.get('staticInfo', {})
@@ -43,8 +42,8 @@ class PartialServer:
 
 
 class Server:
-    def __init__(self, client: Client, data: dict) -> None:
-        self._client: Client = client
+    def __init__(self, client: HTTPClient, data: dict) -> None:
+        self._client: HTTPClient = client
         self.data: dict = data
 
         self.server_properties = ServerProperties(

@@ -39,7 +39,7 @@ class HTTPClient:
     async def getAllServers(self):
         data = await self._http.get('/servers')
         for server in data['servers']:
-            yield PartialServer(self._http, server)
+            yield PartialServer(server)
 
     async def getPluginByID(self, plugin_id: str) -> Plugin:
         if not hasattr(self, '__plugins'):
