@@ -3,10 +3,10 @@ import asyncio
 import sys
 from typing import Optional, Generator
 
-from . import __version__
 from .constants import CLIENT_TIMEOUT
 from .errors import *
 from .http import HTTP
+from .meta import __version__
 from .objects import Server, PartialServer, Plugin
 
 
