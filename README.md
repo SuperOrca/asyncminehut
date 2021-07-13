@@ -1,4 +1,10 @@
 # asyncminehut
- ## A async wrapper for the minehut api.
+ A async wrapper for the minehut api.
+ 
+## Installation
+```
+pip install git+https://github.com/SuperOrca/asyncminehut.git
+```
 
-For examples, use the wiki tab.
+## Examples
+ For examples, use the wiki tab.
