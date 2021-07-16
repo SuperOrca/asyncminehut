@@ -155,11 +155,8 @@ class SimpleStats:
     def __init__(self, data: dict):
         self.data: dict = data
 
-        self.player_count = data.get('player_count')
-        self.server_count = data.get('server_count')
-        self.server_max = data.get('server_max')
-        self.ram_count = data.get('ram_count')
-        self.ram_max = data.get('ram_max')
+        for key, value in data.items():
+            setattr(self, key, value)
 
     def __repr__(self) -> str:
         return '<SimpleStats>'
@@ -172,14 +169,15 @@ class HomepageStats:
     def __init__(self, data: dict):
         self.data: dict = data
 
-        self.server_count = data.get('server_count')
-        self.user_count = data.get('user_count')
+        for key, value in data.items():
+            setattr(self, key, value)
 
     def __repr__(self) -> str:
         return '<HomepageStats>'
 
     def __dict__(self) -> dict:
         return self.data
+
 
 class PlayerDistribution:
     def __init__(self, data: dict):
