@@ -115,3 +115,6 @@ dmypy.json
 
 # intellij
 .idea/
+
+# tests
+test.py

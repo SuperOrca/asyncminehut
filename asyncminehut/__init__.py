@@ -1,4 +1,4 @@
-from .client import HTTPClient as Client
+from .client import Client
 from .errors import *
-from .objects import *
+from .models import *
 from .meta import *

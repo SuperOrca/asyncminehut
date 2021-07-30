@@ -1,5 +1,13 @@
-def get(_list, key, value):
-    for _dict in _list:
-        if _dict[key] == value:
-            return _dict
+from typing import Any
+
+
+def get(__list, key, value) -> Any:
+    for __dict in __list:
+        if __dict.get(key) == value:
+            return __dict
     return False
+
+
+__all__ = (
+    "get"
+)

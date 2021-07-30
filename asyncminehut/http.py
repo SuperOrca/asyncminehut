@@ -1,5 +1,3 @@
-from aiohttp import ClientSession
-
 from .constants import BASE_URL
 
 
@@ -12,3 +10,11 @@ class HTTP:
 
     async def post(self, url: str, **kwargs) -> dict:
         return await (await self.session.post(BASE_URL + url, **kwargs)).json()
+
+    async def close(self) -> None:
+        await self.session.close()
+
+
+__all__ = (
+    "HTTP"
+)
