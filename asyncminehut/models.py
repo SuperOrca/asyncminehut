@@ -1,12 +1,13 @@
 import re
-from typing import AsyncGenerator
+from typing import AsyncGenerator, AnyStr, Dict
+import datetime
 
 
 from .constants import URL_REGEX
 
 
 class Model:
-    def __repr__(self) -> str:
+    def __repr__(self) -> AnyStr:
         value = ' '.join(
             f'{attr}={getattr(self, attr)!r}' for attr in self.__slots__)
         return f'<{self.__class__.__name__} {value}>'
@@ -22,8 +23,7 @@ class PartialServer(Model):
         self.id = self.static.get('_id')
         self.plan = ServerPlan(self.static.get(
             'rawPlan'), self.static.get('planMaxPlayers'))
-        self.service_start_date = self.static.get(
-            'serviceStartDate')  # datetime
+        self.service_start_date = datetime.datetime.fromtimestamp((self.static.get('serviceStartDate'))/1000.0, tz=datetime.timezone.utc)
 
         self.max_players = data.get('maxPlayers')
         self.name = data.get('name')
@@ -32,17 +32,17 @@ class PartialServer(Model):
         self.visibility = data.get('visibility')
 
         self.save = data.get('saveData', {})
-        self.last_save = self.save.get('lastSave')  # datetime
+        self.last_save = datetime.datetime.fromtimestamp((self.save.get('lastSave'))/1000.0, tz=datetime.timezone.utc)
 
         self.player_data = data.get('playerData', {})
         self.player_count = self.player_data.get('playerCount')
 
         self.pod = Pod(data.get('podInfo', {}))
 
-    def __str__(self) -> str:
+    def __str__(self) -> AnyStr:
         return self.name
 
-    def __dict__(self) -> dict:
+    def __dict__(self) -> Dict:
         return self.data
 
 
@@ -54,7 +54,7 @@ class ServerPlan(Model):
 
         self.name, self.max_players = self.data
 
-    def __str__(self) -> str:
+    def __str__(self) -> AnyStr:
         return self.name
 
 
@@ -67,10 +67,10 @@ class Pod(Model):
         self.instance = data.get('instance')
         self.sidecar = data.get('instance-sidecar')
 
-    def __str__(self) -> str:
+    def __str__(self) -> AnyStr:
         return self.name
 
-    def __dict__(self) -> dict:
+    def __dict__(self) -> Dict:
         return self.data
 
 
@@ -122,8 +122,8 @@ class Plugin(Model):
         self.version = data.get('version')
         self.disabled = data.get('disabled')
         self.file = data.get('file_name')
-        self.created = data.get('created')  # datetime
-        self.last_updated = data.get('last_updated')  # datetime
+        self.created = datetime.datetime.fromtimestamp((data.get('created'))/1000.0, tz=datetime.timezone.utc)
+        self.last_updated = datetime.datetime.fromtimestamp((data.get('last_updated'))/1000.0, tz=datetime.timezone.utc)
         self.html_description_extended = data.get('html_desc_extended')
 
         try:
@@ -132,10 +132,10 @@ class Plugin(Model):
         except AttributeError:
             self.link = None
 
-    def __str__(self) -> str:
+    def __str__(self) -> AnyStr:
         return self.name
 
-    def __dict__(self) -> dict:
+    def __dict__(self) -> Dict:
         return self.data
 
 
@@ -151,7 +151,7 @@ class SimpleStats(Model):
         self.ram_count = data.get('ram_count')
         self.ram_max = data.get('ram_max')
 
-    def __dict__(self) -> dict:
+    def __dict__(self) -> Dict:
         return self.data
 
 
@@ -164,7 +164,7 @@ class HomepageStats(Model):
         self.server_count = data.get('server_count')
         self.user_count = data.get('user_count')
 
-    def __dict__(self) -> dict:
+    def __dict__(self) -> Dict:
         return self.data
 
 
@@ -181,7 +181,7 @@ class PlayerDistribution(Model):
         self.java_lobby = data.get('javaLobby')
         self.java_player_server = data.get('javaPlayerServer')
 
-    def __dict__(self) -> dict:
+    def __dict__(self) -> Dict:
         return self.data
 
 
@@ -206,9 +206,9 @@ class Server(Model):
         self.storage_node = data.get('storage_node')
         self.owner = data.get('owner')
         self.name = data.get('name')
-        self.creation = data.get('creation')  # datetime
+        self.creation = datetime.datetime.fromtimestamp((data.get('creation'))/1000.0, tz=datetime.timezone.utc)
         self.credits_per_day = data.get('credits_per_day')
-        self.last_online = data.get('last_online')  # datetime
+        self.last_online = datetime.datetime.fromtimestamp((data.get('last_online'))/1000.0, tz=datetime.timezone.utc)
         self.icon = data.get('icon')
         self.online = data.get('online')
         self.max_players = data.get('max_players')
@@ -217,13 +217,18 @@ class Server(Model):
             'rawPlan'), None)
 
     async def get_plugins(self) -> AsyncGenerator[Plugin, None]:
+        """A method that yields the plugins of a server.
+
+        Yields:
+            Iterator[AsyncGenerator[Plugin, None]]: [description]
+        """
         for plugin in self.data.get('active_plugins'):
             yield await self._client.getPluginByID(plugin)
 
-    def __str__(self) -> str:
+    def __str__(self) -> AnyStr:
         return self.name
 
-    def __dict__(self) -> dict:
+    def __dict__(self) -> Dict:
         return self.data
 
 

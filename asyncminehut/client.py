@@ -24,6 +24,17 @@ class Client:
         self._http: HTTP = HTTP(self._session)
 
     async def getServerByID(self, server_id: str) -> Server:
+        """A method that gets a server by an id.
+
+        Args:
+            server_id (str)
+
+        Raises:
+            ServerNotFound
+
+        Returns:
+            Server
+        """
         data = await self._http.get(f'/server/{server_id}')
         if not data.get('ok', True):
             raise ServerNotFound(
@@ -31,6 +42,17 @@ class Client:
         return Server(self, data.get('server'))
 
     async def getServerByName(self, server_name: str) -> Server:
+        """A method that gets a server by a name.
+
+        Args:
+            server_name (str)
+
+        Raises:
+            ServerNotFound
+
+        Returns:
+            Server
+        """
         data = await self._http.get(f'/server/{server_name}?byName=true')
         if not data.get('ok', True):
             raise ServerNotFound(
@@ -38,16 +60,43 @@ class Client:
         return Server(self, data.get('server'))
 
     async def getAllServers(self) -> AsyncGenerator[PartialServer, None]:
+        """A method that gets all the online servers.
+
+        Returns:
+            AsyncGenerator[PartialServer, None]
+
+        Yields:
+            Iterator[AsyncGenerator[PartialServer, None]]
+        """
         data = await self._http.get('/servers')
         for server in data.get('servers'):
             yield PartialServer(server)
 
     async def getTop5Servers(self) -> AsyncGenerator[PartialServer, None]:
+        """Get the top 5 servers.
+
+        Returns:
+            AsyncGenerator[PartialServer, None]
+
+        Yields:
+            Iterator[AsyncGenerator[PartialServer, None]]
+        """
         data = await self._http.get('/network/top_servers')
         for server in data.get('servers'):
             yield PartialServer(server)
 
     async def getPluginByID(self, plugin_id: str) -> Plugin:
+        """A method that gets a plugin by an id.
+
+        Args:
+            plugin_id (str)
+
+        Raises:
+            PluginNotFound
+
+        Returns:
+            Plugin
+        """
         if not hasattr(self, '__plugins'):
             self.__plugins = await self._http.get('/plugins_public')
         query = get(self.__plugins.get('all'), '_id', plugin_id)
@@ -57,6 +106,17 @@ class Client:
         return Plugin(query)
 
     async def getPluginByName(self, plugin_name: str) -> Plugin:
+        """A method that gets a plugin by a name.
+
+        Args:
+            plugin_name (str)
+
+        Raises:
+            PluginNotFound
+
+        Returns:
+            Plugin
+        """
         if not hasattr(self, '__plugins'):
             self.__plugins = await self._http.get('/plugins_public')
         query = get(self.__plugins.get('all'), 'name', plugin_name)
@@ -66,24 +126,48 @@ class Client:
         return Plugin(query)
 
     async def getAllPlugins(self) -> AsyncGenerator[Plugin, None]:
+        """A method that gets all the plugins.
+
+        Returns:
+            AsyncGenerator[Plugin, None]
+
+        Yields:
+            Iterator[AsyncGenerator[Plugin, None]]
+        """
         if not hasattr(self, '__plugins'):
             self.__plugins = await self._http.get('/plugins_public')
         for plugin in self.__plugins.get('all'):
             yield Plugin(plugin)
 
     async def getSimpleStats(self) -> SimpleStats:
+        """A method that gets the simple stats.
+
+        Returns:
+            SimpleStats
+        """
         data = await self._http.get('/network/simple_stats')
         return SimpleStats(data)
 
     async def getHomepageStats(self) -> HomepageStats:
+        """A method that gets the homepage stats.
+
+        Returns:
+            HomepageStats
+        """
         data = await self._http.get('/network/homepage_stats')
         return HomepageStats(data)
 
     async def getPlayerDistribution(self) -> PlayerDistribution:
+        """A method that gets the player distribution.
+
+        Returns:
+            PlayerDistribution
+        """
         data = await self._http.get('/network/players/distribution')
         return PlayerDistribution(data)
 
     async def close(self) -> None:
+        """A method that closes the client."""
         await self._http.close()
 
 

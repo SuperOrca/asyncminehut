@@ -16,7 +16,7 @@ setup(
     url="https://github.com/SuperOrca/asyncminehut",
     author="SuperOrca",
     packages=find_packages(),
-    install_requires=["aiohttp"],
+    install_requires=["aiohttp", "datetime"],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
