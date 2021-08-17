@@ -1,4 +1,6 @@
+from .errors import InvalidCredential
 from typing import Any, List
+from uuid import UUID
 
 
 def get(__list: List[dict], key: Any, value: Any) -> dict:
@@ -18,6 +20,14 @@ def get(__list: List[dict], key: Any, value: Any) -> dict:
     return False
 
 
+def is_valid_uuid(uuid: str) -> UUID:
+    try:
+        return UUID(uuid, version=4)
+    except ValueError:
+        raise InvalidCredential
+
+
 __all__ = (
-    "get"
+    "get",
+    "is_valid_uuid"
 )

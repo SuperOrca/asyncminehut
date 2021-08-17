@@ -12,7 +12,7 @@ from .utils import get
 
 
 class Client:
-    def __init__(self, session: Optional[aiohttp.ClientSession] = None,
+    def __init__(self, auth_token: str = None, session_id: str = None, session: Optional[aiohttp.ClientSession] = None,
                  loop: Optional[asyncio.AbstractEventLoop] = None) -> None:
         self._loop: asyncio.AbstractEventLoop = loop or asyncio.get_event_loop()
         self._session: aiohttp.ClientSession = session or aiohttp.ClientSession(
@@ -21,9 +21,10 @@ class Client:
             headers={'User-Agent': "AsyncMinehut v{} Python/{}.{} aiohttp/{}".format(
                 __version__, sys.version_info[0], sys.version_info[1], aiohttp.__version__)}
         )
-        self._http: HTTP = HTTP(self._session)
+        self._http: HTTP = HTTP(
+            self._session, auth_token=auth_token, session_id=session_id)
 
-    async def getServerByID(self, server_id: str) -> Server:
+    async def get_server_by_id(self, server_id: str) -> Server:
         """A method that gets a server by an id.
 
         Args:
@@ -41,7 +42,7 @@ class Client:
                 'Server with id "{}" was not found.'.format(server_id))
         return Server(self, data.get('server'))
 
-    async def getServerByName(self, server_name: str) -> Server:
+    async def get_server_by_name(self, server_name: str) -> Server:
         """A method that gets a server by a name.
 
         Args:
@@ -59,7 +60,7 @@ class Client:
                 'Server with name "{}" was not found.'.format(server_name))
         return Server(self, data.get('server'))
 
-    async def getAllServers(self) -> AsyncGenerator[PartialServer, None]:
+    async def get_all_servers(self) -> AsyncGenerator[PartialServer, None]:
         """A method that gets all the online servers.
 
         Returns:
@@ -72,7 +73,7 @@ class Client:
         for server in data.get('servers'):
             yield PartialServer(server)
 
-    async def getTop5Servers(self) -> AsyncGenerator[PartialServer, None]:
+    async def get_top_5_servers(self) -> AsyncGenerator[PartialServer, None]:
         """Get the top 5 servers.
 
         Returns:
@@ -85,7 +86,7 @@ class Client:
         for server in data.get('servers'):
             yield PartialServer(server)
 
-    async def getPluginByID(self, plugin_id: str) -> Plugin:
+    async def get_plugin_by_id(self, plugin_id: str) -> Plugin:
         """A method that gets a plugin by an id.
 
         Args:
@@ -105,7 +106,7 @@ class Client:
                 'Plugin with id "{}" was not found.'.format(plugin_id))
         return Plugin(query)
 
-    async def getPluginByName(self, plugin_name: str) -> Plugin:
+    async def get_plugin_by_name(self, plugin_name: str) -> Plugin:
         """A method that gets a plugin by a name.
 
         Args:
@@ -125,7 +126,7 @@ class Client:
                 'Plugin with name "{}" was not found.'.format(plugin_name))
         return Plugin(query)
 
-    async def getAllPlugins(self) -> AsyncGenerator[Plugin, None]:
+    async def get_all_plugins(self) -> AsyncGenerator[Plugin, None]:
         """A method that gets all the plugins.
 
         Returns:
@@ -139,7 +140,7 @@ class Client:
         for plugin in self.__plugins.get('all'):
             yield Plugin(plugin)
 
-    async def getSimpleStats(self) -> SimpleStats:
+    async def get_simple_stats(self) -> SimpleStats:
         """A method that gets the simple stats.
 
         Returns:
@@ -148,7 +149,7 @@ class Client:
         data = await self._http.get('/network/simple_stats')
         return SimpleStats(data)
 
-    async def getHomepageStats(self) -> HomepageStats:
+    async def get_homepage_stats(self) -> HomepageStats:
         """A method that gets the homepage stats.
 
         Returns:
@@ -157,7 +158,7 @@ class Client:
         data = await self._http.get('/network/homepage_stats')
         return HomepageStats(data)
 
-    async def getPlayerDistribution(self) -> PlayerDistribution:
+    async def get_player_distribution(self) -> PlayerDistribution:
         """A method that gets the player distribution.
 
         Returns:
