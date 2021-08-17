@@ -1,4 +1,3 @@
-from typing import Dict
 from .errors import APIError, Unauthorized
 from .constants import BASE_URL
 
@@ -7,7 +6,7 @@ class HTTP:
     def __init__(self, session) -> None:
         self.session = session
 
-    async def get(self, route: str, **kwargs) -> Dict:
+    async def get(self, route: str, **kwargs) -> dict:
         """A method that gets a route on the api.
 
         Args:
@@ -26,7 +25,7 @@ class HTTP:
             raise APIError(f"Response returned {response.status}.")
         return await response.json()
 
-    async def post(self, route: str, **kwargs) -> Dict:
+    async def post(self, route: str, **kwargs) -> dict:
         """A method that posts to a route on the api.
 
         Args:

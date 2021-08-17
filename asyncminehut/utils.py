@@ -1,7 +1,7 @@
-from typing import Any, Dict, List
+from typing import Any, List
 
 
-def get(__list: List, key: Any, value: Any) -> Dict:
+def get(__list: List[dict], key: Any, value: Any) -> dict:
     """Finds a element from a list of dictionaries with a key and value.
 
     Args:

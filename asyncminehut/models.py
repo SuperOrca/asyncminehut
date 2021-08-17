@@ -1,5 +1,5 @@
 import re
-from typing import AsyncGenerator, AnyStr, Dict
+from typing import AsyncGenerator
 import datetime
 
 
@@ -7,10 +7,21 @@ from .constants import URL_REGEX
 
 
 class Model:
-    def __repr__(self) -> AnyStr:
-        value = ' '.join(
-            f'{attr}={getattr(self, attr)!r}' for attr in self.__slots__)
-        return f'<{self.__class__.__name__} {value}>'
+    def __repr__(self) -> str:
+        value = ''.join(
+            f' {attr}={getattr(self, attr)!r}' for attr in self.__slots__)
+        return f'<{self.__class__.__name__}{value}>'
+
+    def __str__(self) -> str:
+        if hasattr(self, 'name'):
+            return self.name
+        return self.__repr__()
+
+    @property
+    def __dict__(self) -> dict:
+        if hasattr(self, 'data') and isinstance(self.data, dict):
+            return self.data
+        return None
 
 
 class PartialServer(Model):
@@ -23,7 +34,8 @@ class PartialServer(Model):
         self.id = self.static.get('_id')
         self.plan = ServerPlan(self.static.get(
             'rawPlan'), self.static.get('planMaxPlayers'))
-        self.service_start_date = datetime.datetime.fromtimestamp((self.static.get('serviceStartDate'))/1000.0, tz=datetime.timezone.utc)
+        self.service_start_date = datetime.datetime.fromtimestamp(
+            (self.static.get('serviceStartDate'))/1000.0, tz=datetime.timezone.utc)
 
         self.max_players = data.get('maxPlayers')
         self.name = data.get('name')
@@ -32,18 +44,14 @@ class PartialServer(Model):
         self.visibility = data.get('visibility')
 
         self.save = data.get('saveData', {})
-        self.last_save = datetime.datetime.fromtimestamp((self.save.get('lastSave'))/1000.0, tz=datetime.timezone.utc)
+        if (last_save := self.save.get('lastSave')) is not None:
+            self.last_save = datetime.datetime.fromtimestamp(
+                last_save/1000.0, tz=datetime.timezone.utc)
 
         self.player_data = data.get('playerData', {})
         self.player_count = self.player_data.get('playerCount')
 
         self.pod = Pod(data.get('podInfo', {}))
-
-    def __str__(self) -> AnyStr:
-        return self.name
-
-    def __dict__(self) -> Dict:
-        return self.data
 
 
 class ServerPlan(Model):
@@ -54,9 +62,6 @@ class ServerPlan(Model):
 
         self.name, self.max_players = self.data
 
-    def __str__(self) -> AnyStr:
-        return self.name
-
 
 class Pod(Model):
     __slots__ = ('instance', 'sidecar')
@@ -66,12 +71,6 @@ class Pod(Model):
 
         self.instance = data.get('instance')
         self.sidecar = data.get('instance-sidecar')
-
-    def __str__(self) -> AnyStr:
-        return self.name
-
-    def __dict__(self) -> Dict:
-        return self.data
 
 
 class ServerProperties(Model):
@@ -103,9 +102,6 @@ class ServerProperties(Model):
         self.view_distance = data.get('view_distance')
         self.spawn_protection = data.get('spawn_protection')
 
-    def __dict__(self) -> dict:
-        return self.data
-
 
 class Plugin(Model):
     __slots__ = ('id', 'name')
@@ -122,8 +118,10 @@ class Plugin(Model):
         self.version = data.get('version')
         self.disabled = data.get('disabled')
         self.file = data.get('file_name')
-        self.created = datetime.datetime.fromtimestamp((data.get('created'))/1000.0, tz=datetime.timezone.utc)
-        self.last_updated = datetime.datetime.fromtimestamp((data.get('last_updated'))/1000.0, tz=datetime.timezone.utc)
+        self.created = datetime.datetime.fromtimestamp(
+            (data.get('created'))/1000.0, tz=datetime.timezone.utc)
+        self.last_updated = datetime.datetime.fromtimestamp(
+            (data.get('last_updated'))/1000.0, tz=datetime.timezone.utc)
         self.html_description_extended = data.get('html_desc_extended')
 
         try:
@@ -131,12 +129,6 @@ class Plugin(Model):
             self.link = match.groups()[0]
         except AttributeError:
             self.link = None
-
-    def __str__(self) -> AnyStr:
-        return self.name
-
-    def __dict__(self) -> Dict:
-        return self.data
 
 
 class SimpleStats(Model):
@@ -151,9 +143,6 @@ class SimpleStats(Model):
         self.ram_count = data.get('ram_count')
         self.ram_max = data.get('ram_max')
 
-    def __dict__(self) -> Dict:
-        return self.data
-
 
 class HomepageStats(Model):
     __slots__ = ()
@@ -163,9 +152,6 @@ class HomepageStats(Model):
 
         self.server_count = data.get('server_count')
         self.user_count = data.get('user_count')
-
-    def __dict__(self) -> Dict:
-        return self.data
 
 
 class PlayerDistribution(Model):
@@ -180,9 +166,6 @@ class PlayerDistribution(Model):
         self.bedrock_player_server = data.get('bedrockPlayerServer')
         self.java_lobby = data.get('javaLobby')
         self.java_player_server = data.get('javaPlayerServer')
-
-    def __dict__(self) -> Dict:
-        return self.data
 
 
 class Server(Model):
@@ -206,9 +189,11 @@ class Server(Model):
         self.storage_node = data.get('storage_node')
         self.owner = data.get('owner')
         self.name = data.get('name')
-        self.creation = datetime.datetime.fromtimestamp((data.get('creation'))/1000.0, tz=datetime.timezone.utc)
+        self.creation = datetime.datetime.fromtimestamp(
+            (data.get('creation'))/1000.0, tz=datetime.timezone.utc)
         self.credits_per_day = data.get('credits_per_day')
-        self.last_online = datetime.datetime.fromtimestamp((data.get('last_online'))/1000.0, tz=datetime.timezone.utc)
+        self.last_online = datetime.datetime.fromtimestamp(
+            (data.get('last_online'))/1000.0, tz=datetime.timezone.utc)
         self.icon = data.get('icon')
         self.online = data.get('online')
         self.max_players = data.get('max_players')
@@ -224,12 +209,6 @@ class Server(Model):
         """
         for plugin in self.data.get('active_plugins'):
             yield await self._client.getPluginByID(plugin)
-
-    def __str__(self) -> AnyStr:
-        return self.name
-
-    def __dict__(self) -> Dict:
-        return self.data
 
 
 __all__ = (
