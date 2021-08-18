@@ -4,6 +4,8 @@ import datetime
 
 
 from .constants import URL_REGEX
+from .http import HTTP
+from .errors import APIError
 
 
 class Model:
@@ -171,8 +173,8 @@ class PlayerDistribution(Model):
 class Server(Model):
     __slots__ = ('id', 'name')
 
-    def __init__(self, client, data: dict) -> None:
-        self._client = client
+    def __init__(self, http: HTTP, data: dict) -> None:
+        self._http = http
         self.data: dict = data
 
         self.server_properties = ServerProperties(
@@ -202,13 +204,92 @@ class Server(Model):
             'rawPlan'), None)
 
     async def get_plugins(self) -> AsyncGenerator[Plugin, None]:
-        """A method that yields the plugins of a server.
-
-        Yields:
-            Iterator[AsyncGenerator[Plugin, None]]: [description]
-        """
+        """A method that yields the plugins of the server."""
         for plugin in self.data.get('active_plugins'):
-            yield await self._client.getPluginByID(plugin)
+            yield plugin
+
+    async def start(self) -> bool:
+        """A method that starts the server. Requires authentication."""
+        try:
+            await self._http.post(f'/server/{self.id}/start_service')
+            await self._http.post(f'/server/{self.id}/start')
+            return True
+        except APIError:
+            return False
+
+    async def stop(self) -> bool:
+        """A method that starts the server. Requires authentication."""
+        try:
+            await self._http.post(f'/server/{self.id}/destroy_service')
+            await self._http.post(f'/server/{self.id}/shutdown')
+            return True
+        except APIError:
+            return False
+
+    async def restart(self) -> bool:
+        """A method that starts the server. Requires authentication."""
+        await self._http.post(f'/server/{self.id}/restart')
+        return True
+
+    async def set_visibility(self, visibility: bool) -> bool:
+        """A method that sets the visibility of the server. Requires authentication."""
+        await self._http.post(f'/server/{self.id}/visibility', data={"visibility": visibility})
+        return True
+
+    async def send_command(self, command: str) -> bool:
+        """A method that sends a command to the server. Requires authentication."""
+        await self._http.post(f'/server/{self.id}/command', data={"command": command})
+        return True
+
+    async def change_icon(self, icon: str) -> bool:
+        """A method that changes the icon of the server. Requires authentication."""
+        await self._http.post(f'/server/{self.id}/icon/equip', data={"icon_id": icon})
+        return True
+
+    async def rename(self, name: str = None) -> bool:
+        """A method that renames the server. Requires authentication."""
+        await self._http.post(f'/server/{self.id}/change_name', data={"name": name})
+        return True
+
+    async def edit_properties(self, field: str, value: str) -> bool:
+        """A method that edits the properties of the server. Requires authentication."""
+        await self._http.post(f'/server/{self.id}/edit_server_properties', data={"field": field, "value": value})
+        return True
+
+    async def install_plugin(self, plugin: Plugin) -> bool:
+        """A method that installs a plugin. Requires authentication."""
+        await self._http.post(f'/server/{self.id}/install_plugin', data={"plugin": plugin.id})
+        return True
+
+    async def uninstall_plugin(self, plugin: Plugin) -> bool:
+        """A method that uninstalls a plugin. Requires authentication."""
+        await self._http.post(f'/server/{self.id}/remove_plugin', data={"plugin": plugin.id})
+        return True
+
+    async def reset_plugin_config(self, plugin: Plugin) -> bool:
+        """A method that resets the configuration of a plugin. Requires authentication."""
+        await self._http.post(f'/server/{self.id}/remove_plugin_data', data={"plugin": plugin.id})
+        return True
+
+    async def save_world(self) -> bool:
+        """A method that saves the world. Requires authentication."""
+        await self._http.post(f'/server/{self.id}/save')
+        return True
+
+    async def reset_world(self) -> bool:
+        """A method that resets the world. Requires authentication."""
+        await self._http.post(f'/server/{self.id}/reset_world')
+        return True
+
+    async def reset(self) -> bool:
+        """A method that resets the server. Requires authentication."""
+        await self._http.post(f'/server/{self.id}/reset_all')
+        return True
+
+    async def repair(self) -> bool:
+        """A method that repairs the server. Requires authentication."""
+        await self._http.post(f'/server/{self.id}/repair_files')
+        return True
 
 
 __all__ = (

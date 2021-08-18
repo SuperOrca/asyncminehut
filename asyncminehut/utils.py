@@ -3,19 +3,10 @@ from typing import Any, List
 from uuid import UUID
 
 
-def get(__list: List[dict], key: Any, value: Any) -> dict:
-    """Finds a element from a list of dictionaries with a key and value.
-
-    Args:
-        __list (List)
-        key (Any)
-        value (Any)
-
-    Returns:
-        Dict
-    """
+def get(__list: List[dict], key: str, value: Any) -> dict:
+    """Finds an element from a list of dictionaries with a key and value."""
     for __dict in __list:
-        if __dict.get(key) == value:
+        if __dict.get(key).lower() == value:
             return __dict
     return False
 

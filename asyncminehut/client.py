@@ -25,79 +25,35 @@ class Client:
             self._session, auth_token=auth_token, session_id=session_id)
 
     async def get_server_by_id(self, server_id: str) -> Server:
-        """A method that gets a server by an id.
-
-        Args:
-            server_id (str)
-
-        Raises:
-            ServerNotFound
-
-        Returns:
-            Server
-        """
+        """A method that gets a server by an id."""
         data = await self._http.get(f'/server/{server_id}')
         if not data.get('ok', True):
             raise ServerNotFound(
                 'Server with id "{}" was not found.'.format(server_id))
-        return Server(self, data.get('server'))
+        return Server(self._http, data.get('server'))
 
     async def get_server_by_name(self, server_name: str) -> Server:
-        """A method that gets a server by a name.
-
-        Args:
-            server_name (str)
-
-        Raises:
-            ServerNotFound
-
-        Returns:
-            Server
-        """
+        """A method that gets a server by a name."""
         data = await self._http.get(f'/server/{server_name}?byName=true')
         if not data.get('ok', True):
             raise ServerNotFound(
                 'Server with name "{}" was not found.'.format(server_name))
-        return Server(self, data.get('server'))
+        return Server(self._http, data.get('server'))
 
     async def get_all_servers(self) -> AsyncGenerator[PartialServer, None]:
-        """A method that gets all the online servers.
-
-        Returns:
-            AsyncGenerator[PartialServer, None]
-
-        Yields:
-            Iterator[AsyncGenerator[PartialServer, None]]
-        """
+        """A method that gets all the online servers."""
         data = await self._http.get('/servers')
         for server in data.get('servers'):
             yield PartialServer(server)
 
     async def get_top_5_servers(self) -> AsyncGenerator[PartialServer, None]:
-        """Get the top 5 servers.
-
-        Returns:
-            AsyncGenerator[PartialServer, None]
-
-        Yields:
-            Iterator[AsyncGenerator[PartialServer, None]]
-        """
+        """Get the top 5 servers."""
         data = await self._http.get('/network/top_servers')
         for server in data.get('servers'):
             yield PartialServer(server)
 
     async def get_plugin_by_id(self, plugin_id: str) -> Plugin:
-        """A method that gets a plugin by an id.
-
-        Args:
-            plugin_id (str)
-
-        Raises:
-            PluginNotFound
-
-        Returns:
-            Plugin
-        """
+        """A method that gets a plugin by an id."""
         if not hasattr(self, '__plugins'):
             self.__plugins = await self._http.get('/plugins_public')
         query = get(self.__plugins.get('all'), '_id', plugin_id)
@@ -107,65 +63,40 @@ class Client:
         return Plugin(query)
 
     async def get_plugin_by_name(self, plugin_name: str) -> Plugin:
-        """A method that gets a plugin by a name.
-
-        Args:
-            plugin_name (str)
-
-        Raises:
-            PluginNotFound
-
-        Returns:
-            Plugin
-        """
+        """A method that gets a plugin by a name."""
         if not hasattr(self, '__plugins'):
             self.__plugins = await self._http.get('/plugins_public')
-        query = get(self.__plugins.get('all'), 'name', plugin_name)
+        query = get(self.__plugins.get('all'), 'name', plugin_name.lower())
         if not query:
             raise PluginNotFound(
                 'Plugin with name "{}" was not found.'.format(plugin_name))
         return Plugin(query)
 
     async def get_all_plugins(self) -> AsyncGenerator[Plugin, None]:
-        """A method that gets all the plugins.
-
-        Returns:
-            AsyncGenerator[Plugin, None]
-
-        Yields:
-            Iterator[AsyncGenerator[Plugin, None]]
-        """
+        """A method that gets all the plugins."""
         if not hasattr(self, '__plugins'):
             self.__plugins = await self._http.get('/plugins_public')
         for plugin in self.__plugins.get('all'):
             yield Plugin(plugin)
 
     async def get_simple_stats(self) -> SimpleStats:
-        """A method that gets the simple stats.
-
-        Returns:
-            SimpleStats
-        """
+        """A method that gets the simple stats."""
         data = await self._http.get('/network/simple_stats')
         return SimpleStats(data)
 
     async def get_homepage_stats(self) -> HomepageStats:
-        """A method that gets the homepage stats.
-
-        Returns:
-            HomepageStats
-        """
+        """A method that gets the homepage stats."""
         data = await self._http.get('/network/homepage_stats')
         return HomepageStats(data)
 
     async def get_player_distribution(self) -> PlayerDistribution:
-        """A method that gets the player distribution.
-
-        Returns:
-            PlayerDistribution
-        """
+        """A method that gets the player distribution."""
         data = await self._http.get('/network/players/distribution')
         return PlayerDistribution(data)
+
+    async def create_server(self, name: str, platform: str = "java"):
+        """A method that creates a server."""
+        return await self._http.post('/servers/create', data={"name": name, "platform": platform})
 
     async def close(self) -> None:
         """A method that closes the client."""

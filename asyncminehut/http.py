@@ -16,17 +16,7 @@ class HTTP:
             self.headers['x-session-id'] = session_id
 
     async def get(self, route: str, to_json=True, **kwargs) -> Union[ClientResponse, dict]:
-        """A method that gets a route on the api.
-
-        Args:
-            route (str)
-
-        Raises:
-            APIError
-
-        Returns:
-            dict
-        """
+        """A method that gets a route on the api."""
         response = await self.session.get(BASE_URL + route, headers=self.headers, **kwargs)
         if response.status == 403:
             raise Unauthorized
@@ -36,23 +26,16 @@ class HTTP:
         return await response.json() if to_json else response
 
     async def post(self, route: str, to_json=True, **kwargs) -> Union[ClientResponse, dict]:
-        """A method that posts to a route on the api.
-
-        Args:
-            route (str)
-
-        Raises:
-            APIError
-
-        Returns:
-            dict
-        """
+        """A method that posts to a route on the api."""
         response = await self.session.post(BASE_URL + route, headers=self.headers, **kwargs)
         if response.status == 403:
             raise Unauthorized
         if response.status != 200:
-            error = re.findall(API_ERROR_REGEX, (await response.text()))[0]
-            raise APIError(error)
+            if len(error := re.findall(API_ERROR_REGEX, (await response.text()))) > 0:
+                raise APIError(error[0])
+            else:
+                data = await response.json()
+                raise APIError(data['error'])
         return await response.json() if to_json else response
 
     async def close(self) -> None:
